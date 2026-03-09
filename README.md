@@ -1,2 +1,2 @@
 # Coding-week
-coding week description
+to be or not to be 
