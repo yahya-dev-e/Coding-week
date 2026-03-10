@@ -1,6 +1,6 @@
-import pandas as pd
-import numpy as np
 
+import pandas as pd
+import numpy as np  
 def optimize_memory(df):
     """
     Réduit la taille mémoire d'un DataFrame en convertissant les types de données 
