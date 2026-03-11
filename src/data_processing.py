@@ -5,6 +5,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
 
+
 def load_and_clean_data(filepath):
     df = pd.read_csv(filepath)
     # Remplace les '?' par NaN et convertit en numérique
