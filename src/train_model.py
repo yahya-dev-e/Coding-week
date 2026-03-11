@@ -25,5 +25,3 @@ def train_model():
         
     print("✅ Modèle et outils sauvegardés dans 'trained_svm_assets.pkl' (à la racine).")
 
-if __name__ == "__main__":
-    train_model()
