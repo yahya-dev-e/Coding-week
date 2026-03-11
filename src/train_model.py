@@ -116,5 +116,4 @@ def train_model():
         pickle.dump(data_to_save, f)
         
     print("✅ Modèle et outils sauvegardés dans 'trained_svm_assets.pkl' (à la racine).")
->>>>>>> 29fc9756240f669fbe46879f415b9ff56b90c3d1
 
