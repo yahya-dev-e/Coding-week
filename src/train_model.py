@@ -1,16 +1,14 @@
 import pickle
+import pandas as pd
 from sklearn.svm import SVC
 from data_processing import load_and_clean_data, remove_outliers_iqr, optimize_memory, preprocess_data, supprimer_colonnes_zero
 
 def train_model():
     # 1. Pipeline de données
     df = load_and_clean_data('data/risk_factors_cervical_cancer.csv')
-    df = remove_outliers_iqr(df)
-    df = optimize_memory(df)
-    df = supprimer_colonnes_zero(df)
     X_train, X_test, y_train, y_test, imputer, scaler, cols = preprocess_data(df)    
     # 2. Entraînement SVM
-    model = SVC(kernel='rbf', C=1.0, probability=True, random_state=42)
+    model = SVC(kernel='rbf', C=10.0, gamma='scale', probability=True, random_state=42)
     model.fit(X_train, y_train)
     
     # 3. Sauvegarde avec PICKLE (Standard Python)
