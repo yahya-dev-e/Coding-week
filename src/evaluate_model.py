@@ -1,13 +1,11 @@
 import pickle
+import pandas as pd
 from sklearn.metrics import confusion_matrix, classification_report
 from data_processing import load_and_clean_data, remove_outliers_iqr, optimize_memory, preprocess_data, supprimer_colonnes_zero
 
 def evaluate():
     # 1. Préparation des données de test
     df = load_and_clean_data('data/risk_factors_cervical_cancer.csv')
-    df = remove_outliers_iqr(df)
-    df = optimize_memory(df)
-    df = supprimer_colonnes_zero(df)
     _, X_test_scaled, _, y_test, _, _, _ = preprocess_data(df)    
     # 2. Chargement avec PICKLE
     try:

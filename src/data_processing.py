@@ -33,11 +33,9 @@ def preprocess_data(df):
     
     # On duplique les cas positifs (Biopsy=1) pour égaler les négatifs
     np.random.seed(42)
+    # Est-ce que tu as bien mis num_neg pour la taille de l'échantillon ?
     indices = np.random.choice(len(X_pos), size=len(X_neg), replace=True)
-    X_pos_over = X_pos[indices]
-    
-    # Fusion pour créer le set d'entraînement équilibré
-    X_train_final = np.vstack((X_neg, X_pos_over))
+    X_train_final = np.vstack((X_neg, X_pos[indices]))
     y_train_final = np.hstack((np.zeros(len(X_neg)), np.ones(len(X_neg))))
     # ---------------------------
 
