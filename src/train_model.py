@@ -33,4 +33,3 @@ def train_model_XGBoost():
     X_test_df = pd.DataFrame(X_test, columns=cols)
 
     return model_path, X_test_df, y_test
-train_model_XGBoost()
