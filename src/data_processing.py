@@ -16,19 +16,37 @@ def preprocess_data(df):
     y = df['Biopsy']
     cols = X.columns
     
-    # Stratification pour gérer le déséquilibre des classes (15% at risk)
+    # 1. Split (80% train / 20% test)
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42, stratify=y
     )
     
+    # 2. Imputation (Médiane)
     imputer = SimpleImputer(strategy='median')
+    X_train_imp = imputer.fit_transform(X_train)
+    X_test_imp = imputer.transform(X_test)
+
+    # --- OVERSAMPLING MANUEL ---
+    # Séparation des classes
+    X_pos = X_train_imp[y_train == 1]
+    X_neg = X_train_imp[y_train == 0]
+    
+    # On duplique les cas positifs (Biopsy=1) pour égaler les négatifs
+    np.random.seed(42)
+    indices = np.random.choice(len(X_pos), size=len(X_neg), replace=True)
+    X_pos_over = X_pos[indices]
+    
+    # Fusion pour créer le set d'entraînement équilibré
+    X_train_final = np.vstack((X_neg, X_pos_over))
+    y_train_final = np.hstack((np.zeros(len(X_neg)), np.ones(len(X_neg))))
+    # ---------------------------
+
+    # 3. Scaling
     scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train_final)
+    X_test_scaled = scaler.transform(X_test_imp)
     
-    # Apprentissage et transformation
-    X_train_scaled = scaler.fit_transform(imputer.fit_transform(X_train))
-    X_test_scaled = scaler.transform(imputer.transform(X_test))
-    
-    return X_train_scaled, X_test_scaled, y_train, y_test, imputer, scaler, cols
+    return X_train_scaled, X_test_scaled, y_train_final, y_test, imputer, scaler, cols
 
 def remove_outliers_iqr(df):
     """
@@ -128,4 +146,3 @@ def optimize_memory(df):
     print(f'Mémoire réduite à {end_mem:.2f} MB (Gain de {100 * (start_mem - end_mem) / start_mem:.1f}%)')
     
     return df
-
