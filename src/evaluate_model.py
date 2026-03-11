@@ -57,4 +57,3 @@ def evaluate_model(
         print(f"{name.capitalize():<12} {display}")
 
     return metrics
-
