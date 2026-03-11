@@ -23,5 +23,3 @@ def evaluate():
     print("\n📋 RAPPORT DE CLASSIFICATION :")
     print(classification_report(y_test, predictions))
 
-if __name__ == "__main__":
-    evaluate()
