@@ -17,35 +17,19 @@ def preprocess_data(df):
     y = df['Biopsy']
     cols = X.columns
     
-    # 1. Split (80% train / 20% test)
+    # Stratification pour gérer le déséquilibre des classes (15% at risk)
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42, stratify=y
     )
     
-    # 2. Imputation (Médiane)
     imputer = SimpleImputer(strategy='median')
-    X_train_imp = imputer.fit_transform(X_train)
-    X_test_imp = imputer.transform(X_test)
-
-    # --- OVERSAMPLING MANUEL ---
-    # Séparation des classes
-    X_pos = X_train_imp[y_train == 1]
-    X_neg = X_train_imp[y_train == 0]
-    
-    # On duplique les cas positifs (Biopsy=1) pour égaler les négatifs
-    np.random.seed(42)
-    # Est-ce que tu as bien mis num_neg pour la taille de l'échantillon ?
-    indices = np.random.choice(len(X_pos), size=len(X_neg), replace=True)
-    X_train_final = np.vstack((X_neg, X_pos[indices]))
-    y_train_final = np.hstack((np.zeros(len(X_neg)), np.ones(len(X_neg))))
-    # ---------------------------
-
-    # 3. Scaling
     scaler = StandardScaler()
-    X_train_scaled = scaler.fit_transform(X_train_final)
-    X_test_scaled = scaler.transform(X_test_imp)
     
-    return X_train_scaled, X_test_scaled, y_train_final, y_test, imputer, scaler, cols
+    # Apprentissage et transformation
+    X_train_scaled = scaler.fit_transform(imputer.fit_transform(X_train))
+    X_test_scaled = scaler.transform(imputer.transform(X_test))
+    
+    return X_train_scaled, X_test_scaled, y_train, y_test, imputer, scaler, cols
 
 def remove_outliers_iqr(df):
     """
@@ -78,27 +62,6 @@ def remove_outliers_iqr(df):
                 print(f"🧹 {diff} outliers supprimés dans la colonne : {col}")
                 
     return df_final
-
-
-
-
-def supprimer_colonnes_zero(df):
-    """
-    Supprime les colonnes dont toutes les valeurs sont égales à 0.
-    """
-    # On identifie les colonnes où TOUTES les valeurs valent 0
-    colonnes_a_supprimer = [col for col in df.columns if (df[col] == 0).all()]
-    
-    # On supprime ces colonnes
-    df_nettoye = df.drop(columns=colonnes_a_supprimer)
-    
-    if colonnes_a_supprimer:
-        print(f"✅ Colonne(s) supprimée(s) car remplie(s) de 0 : {colonnes_a_supprimer}")
-    else:
-        print("ℹ️ Aucune colonne ne contient uniquement des 0.")
-        
-    return df_nettoye
-
 
 
 
@@ -145,3 +108,4 @@ def optimize_memory(df):
     print(f'Mémoire réduite à {end_mem:.2f} MB (Gain de {100 * (start_mem - end_mem) / start_mem:.1f}%)')
     
     return df
+

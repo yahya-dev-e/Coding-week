@@ -1,3 +1,4 @@
+
 import pandas as pd
 import joblib
 from sklearn.model_selection import train_test_split
@@ -28,6 +29,8 @@ def train_model_XGBoost():
     joblib.dump(assets, 'xgboost_assets.joblib')
 
     print(f"✅ Modèle sauvegardé dans '{model_path}'.")
+
+
 
     # 4. X_test en DataFrame pour evaluate_model
     X_test_df = pd.DataFrame(X_test, columns=cols)
