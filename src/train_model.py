@@ -36,3 +36,58 @@ def train_model_XGBoost():
     X_test_df = pd.DataFrame(X_test, columns=cols)
 
     return model_path, X_test_df, y_test
+
+
+
+###Random-forest-model:
+
+import pandas as pd
+import numpy as np
+import joblib
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+
+def train_cervical_cancer_model_Random_forest(data_path, model_save_path='model_rf.pkl'):
+    """
+    Entraîne un RandomForestClassifier sur les données fournies.
+    
+    Args:
+        data_path (str): Chemin vers le fichier CSV.
+        model_save_path (str): Chemin pour sauvegarder le modèle entraîné.
+        
+    Returns:
+        tuple: (model_entraine, model_save_path, X_test, y_test)
+    """
+    # 1. Chargement et nettoyage
+    df = pd.read_csv(data_path)
+    df = df.replace('?', np.nan)
+    df = df.apply(pd.to_numeric)
+    
+    # Imputation par la moyenne
+    df = df.fillna(df.mean())
+
+    # 2. Séparation X et y
+    # On retire les cibles potentielles pour isoler les features
+    features_to_drop = ['Biopsy', 'Hinselmann', 'Schiller', 'Citology']
+    X = df.drop(features_to_drop, axis=1)
+    y = df['Biopsy']
+
+    # 3. Split 80/20
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42
+    )
+
+    # 4. Entraînement du modèle
+    model = RandomForestClassifier(n_estimators=100, random_state=42)
+    model.fit(X_train, y_train)
+
+    # 5. Sauvegarde locale du modèle
+    joblib.dump(model, model_save_path)
+
+    # --- AJOUT : Sauvegarde des données de test ---
+    joblib.dump(X_test, 'data/X_test.pkl')
+    joblib.dump(y_test, 'data/y_test.pkl')
+    
+    print(f"Modèle et données de test sauvegardés.")
+    return model, model_save_path, X_test, y_test
+
