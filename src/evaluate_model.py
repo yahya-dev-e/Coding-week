@@ -8,7 +8,7 @@ from sklearn.metrics import (
     f1_score,
     roc_auc_score,
 )
-from train_model import train_model_catboost, train_model_SVM, train_model_XGboost, train_model_RFC
+import train_model
 
 def evaluate_model(
     model_path: str,
@@ -56,7 +56,3 @@ def evaluate_model(
         print(f"{name.capitalize():<12} {display}")
 
     return metrics
-<<<<<<< HEAD
->>>>>>> Stashed changes
-=======
->>>>>>> origin/main
