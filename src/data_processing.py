@@ -127,3 +127,17 @@ def optimize_memory(df):
     
     return df
 
+def drop_high_correlation(df, threshold=0.9):
+    # Calcul de la matrice de corrélation
+    corr_matrix = df.corr().abs()
+    
+    # Sélection de la partie supérieure de la matrice
+    upper = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(bool))
+    
+    # Identification des colonnes à supprimer
+    to_drop = [column for column in upper.columns if any(upper[column] > threshold)]
+    
+    if to_drop:
+        print(f"🗑️ Colonnes supprimées car trop corrélées : {to_drop}")
+        return df.drop(columns=to_drop)
+    return df
