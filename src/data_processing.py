@@ -17,19 +17,42 @@ def preprocess_data(df):
     y = df['Biopsy']
     cols = X.columns
     
-    # Stratification pour gérer le déséquilibre des classes (15% at risk)
+    # 1. Stratification pour le split initial (garde le déséquilibre naturel dans le test)
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42, stratify=y
     )
     
+    # 2. Imputation
     imputer = SimpleImputer(strategy='median')
+    X_train_imp = imputer.fit_transform(X_train)
+    X_test_imp = imputer.transform(X_test)
+
+    # --- DEBUT OVERSAMPLING MANUEL ---
+    # On sépare les classes du set d'entraînement
+    X_train_pos = X_train_imp[y_train == 1]
+    X_train_neg = X_train_imp[y_train == 0]
+    
+    # On calcule la taille de la classe majoritaire
+    num_neg = len(X_train_neg)
+    
+    # On duplique aléatoirement les cas positifs pour égaler les négatifs
+    np.random.seed(42)
+    indices = np.random.choice(len(X_train_pos), size=num_neg, replace=True)
+    X_train_pos_over = X_train_pos[indices]
+    
+    # On recombine les données équilibrées
+    X_train_bal = np.vstack((X_train_neg, X_train_pos_over))
+    y_train_bal = np.hstack((np.zeros(num_neg), np.ones(num_neg)))
+    # --- FIN OVERSAMPLING ---
+
+    # 3. Scaling sur les données équilibrées
     scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train_bal)
     
-    # Apprentissage et transformation
-    X_train_scaled = scaler.fit_transform(imputer.fit_transform(X_train))
-    X_test_scaled = scaler.transform(imputer.transform(X_test))
+    # Le test_scaled utilise les données de test NON SURÉCHANTILLONNÉES
+    X_test_scaled = scaler.transform(X_test_imp)
     
-    return X_train_scaled, X_test_scaled, y_train, y_test, imputer, scaler, cols
+    return X_train_scaled, X_test_scaled, y_train_bal, y_test, imputer, scaler, cols
 
 def remove_outliers_iqr(df):
     """
