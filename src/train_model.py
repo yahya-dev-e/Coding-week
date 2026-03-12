@@ -120,33 +120,27 @@ def train_model_svm():
 
 ###Random-forest-model:
 
-def train_model_Randomforest(data_path='data/risk_factors_cervical_cancer.csv', model_save_path='model_rf.pkl'):
-    # 1. Chargement et nettoyage
-    df = pd.read_csv(data_path)
-    df = df.replace('?', np.nan)
-    df = df.apply(pd.to_numeric)
-    
-    # Imputation par la moyenne
-    df = df.fillna(df.mean())
+def train_model_Randomforest():
+    # 1. Pipeline de données
+    df = load_and_clean_data('data/risk_factors_cervical_cancer.csv')
+    X_train, X_test, y_train, y_test, imputer, scaler, cols = preprocess_data(df)
 
-    # 2. Séparation X et y
-    features_to_drop = ['Biopsy', 'Hinselmann', 'Schiller', 'Citology']
-    X = df.drop(features_to_drop, axis=1)
-    y = df['Biopsy']
-
-    # 3. Split 80/20
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42
-    )
-
-    # 4. Entraînement du modèle
+    # 2. Entraînement du modèle
     model = RandomForestClassifier(n_estimators=100, random_state=42)
     model.fit(X_train, y_train)
 
-    # 5. Sauvegarde locale du modèle
-    joblib.dump(model, model_save_path)
-    print(f"✅ Modèle Random Forest sauvegardé dans '{model_save_path}'.")
+    # 3. Sauvegarde locale du modèle
+    model_path = 'Random_forest_model.joblib'
+    joblib.dump(model, model_path)
 
-    # On retourne UNIQUEMENT les 3 arguments attendus par evaluate_model
-    return model_save_path, X_test, y_test
+    assets = {'imputer': imputer, 'scaler': scaler, 'columns': list(cols)}
+    joblib.dump(assets, 'Random_forest_assets.joblib')
+
+    print(f"✅ Modèle sauvegardé dans '{model_path}'.")
+
+    # 4. evaluate_model attend un DataFrame Pandas pour X_test
+    X_test_df = pd.DataFrame(X_test, columns=cols)
+    
+    # On retourne les 3 arguments exacts requis par evaluate_model
+    return model_path, X_test_df, y_test
 
