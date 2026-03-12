@@ -64,6 +64,24 @@ def remove_outliers_iqr(df):
     return df_final
 
 
+import pandas as pd
+
+def supprimer_colonnes_zero(df):
+    """
+    Supprime les colonnes dont toutes les valeurs sont égales à 0.
+    """
+    # On identifie les colonnes où TOUTES les valeurs valent 0
+    colonnes_a_supprimer = [col for col in df.columns if (df[col] == 0).all()]
+    
+    # On supprime ces colonnes
+    df_nettoye = df.drop(columns=colonnes_a_supprimer)
+    
+    if colonnes_a_supprimer:
+        print(f"✅ Colonne(s) supprimée(s) car remplie(s) de 0 : {colonnes_a_supprimer}")
+    else:
+        print("ℹ️ Aucune colonne ne contient uniquement des 0.")
+        
+    return df_nettoye
 
 
 def optimize_memory(df):
