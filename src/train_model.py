@@ -1,12 +1,14 @@
 
 import pandas as pd
 import numpy as np
+import joblib
 from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
-from imblearn.over_sampling import SMOTE
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
 from data_processing import load_and_clean_data, remove_outliers_iqr, preprocess_data
 import os
 from catboost import CatBoostClassifier
@@ -15,90 +17,38 @@ from catboost import CatBoostClassifier
 
 
 
-def train_model_catboost(
-    data_path: str = "data/risk_factors_cervical_cancer.csv",
-    model_output_path: str = "models/catboost_model.pkl",
-    test_size: float = 0.2,
-    random_state: int = 42,
-    target: str = "Biopsy",
-    catboost_params: dict = None,
-) -> dict:
-    """
-    Load data, train a CatBoost classifier, and save the model.
-
-    Parameters
-    ----------
-    data_path : str
-        Path to the raw CSV dataset.
-    model_output_path : str
-        Where to save the trained model (.pkl).
-    test_size : float
-        Fraction of data reserved for the held-out test set.
-    random_state : int
-        Seed for reproducibility.
-    target : str
-        Name of the binary target column.
-    catboost_params : dict, optional
-        Override default CatBoost hyperparameters.
-
-    Returns
-    -------
-    dict with keys:
-        "model"      – fitted CatBoostClassifier
-        "X_test"     – held-out features (pd.DataFrame)
-        "y_test"     – held-out labels  (pd.Series)
-        "model_path" – absolute path of the saved model file
-    """
-    # ── 1. Load ──────────────────────────────────────────────────────────────
-    df = pd.read_csv(data_path, na_values="?")
-
-    X = df.drop(columns=[target])
-    y = df[target]
-
-    # Coerce to numeric (columns were forced to str by '?' values)
-    X = X.apply(pd.to_numeric, errors="coerce")
-
-    # ── 2. Impute ─────────────────────────────────────────────────────────────
-    X = X.fillna(X.median())
-
-    # ── 3. Split ──────────────────────────────────────────────────────────────
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y,
-        test_size=test_size,
-        random_state=random_state,
-        stratify=y,
-    )
-
-    # ── 4. SMOTE ──────────────────────────────────────────────────────────────
-    smote = SMOTE(random_state=random_state)
-    X_train, y_train = smote.fit_resample(X_train, y_train)
-
-    # ── 5. Train ──────────────────────────────────────────────────────────────
-    default_params = dict(
+def train_model_catboost():
+    # 1. Pipeline de données centralisé
+    df = load_and_clean_data('data/risk_factors_cervical_cancer.csv')
+    X_train, X_test, y_train, y_test, imputer, scaler, cols = preprocess_data(df)
+    
+    # 2. Entraînement CatBoost
+    model = CatBoostClassifier(
         iterations=500,
         learning_rate=0.05,
         depth=6,
         loss_function="Logloss",
-        verbose=100,
-        random_seed=random_state,
+        verbose=100, # Affiche la progression tous les 100 arbres
+        random_seed=42
     )
-    if catboost_params:
-        default_params.update(catboost_params)
-
-    model = CatBoostClassifier(**default_params)
     model.fit(X_train, y_train)
+    
+    # 3. Sauvegarde avec JOBLIB (pour matcher avec evaluate_model)
+    model_path = 'catboost_model.joblib'
+    joblib.dump(model, model_path)
+    
+    # Sauvegarde des outils de preprocessing pour l'interface Streamlit
+    assets = {'imputer': imputer, 'scaler': scaler, 'columns': list(cols)}
+    joblib.dump(assets, 'catboost_assets.joblib')
+    
+    print(f"✅ Modèle sauvegardé dans '{model_path}'.")
+    
+    # 4. Conversion de X_test en DataFrame Pandas pour evaluate_model
+    X_test_df = pd.DataFrame(X_test, columns=cols)
+    
+    # Retour des 3 arguments exacts requis
+    return model_path, X_test_df, y_test
 
-    # ── 6. Save ───────────────────────────────────────────────────────────────
-    os.makedirs(os.path.dirname(model_output_path) or ".", exist_ok=True)
-    joblib.dump(model, model_output_path)
-    print(f"Model saved → {os.path.abspath(model_output_path)}")
-
-    return {
-        "model": model,
-        "X_test": X_test,
-        "y_test": y_test,
-        "model_path": os.path.abspath(model_output_path),
-    }
 
 
 
@@ -170,23 +120,11 @@ def train_model_svm():
 
 ###Random-forest-model:
 
-import pandas as pd
-import numpy as np
-import joblib
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
 
-def train_cervical_cancer_model_Random_forest(data_path, model_save_path='model_rf.pkl'):
-    """
-    Entraîne un RandomForestClassifier sur les données fournies.
-    
-    Args:
-        data_path (str): Chemin vers le fichier CSV.
-        model_save_path (str): Chemin pour sauvegarder le modèle entraîné.
-        
-    Returns:
-        tuple: (model_entraine, model_save_path, X_test, y_test)
-    """
+
+
+
+def train_model_Randomforest(data_path='data/risk_factors_cervical_cancer.csv', model_save_path='model_rf.pkl'):
     # 1. Chargement et nettoyage
     df = pd.read_csv(data_path)
     df = df.replace('?', np.nan)
@@ -196,7 +134,6 @@ def train_cervical_cancer_model_Random_forest(data_path, model_save_path='model_
     df = df.fillna(df.mean())
 
     # 2. Séparation X et y
-    # On retire les cibles potentielles pour isoler les features
     features_to_drop = ['Biopsy', 'Hinselmann', 'Schiller', 'Citology']
     X = df.drop(features_to_drop, axis=1)
     y = df['Biopsy']
@@ -212,11 +149,8 @@ def train_cervical_cancer_model_Random_forest(data_path, model_save_path='model_
 
     # 5. Sauvegarde locale du modèle
     joblib.dump(model, model_save_path)
+    print(f"✅ Modèle Random Forest sauvegardé dans '{model_save_path}'.")
 
-    # --- AJOUT : Sauvegarde des données de test ---
-    joblib.dump(X_test, 'data/X_test.pkl')
-    joblib.dump(y_test, 'data/y_test.pkl')
-    
-    print(f"Modèle et données de test sauvegardés.")
-    return model, model_save_path, X_test, y_test
+    # On retourne UNIQUEMENT les 3 arguments attendus par evaluate_model
+    return model_save_path, X_test, y_test
 
