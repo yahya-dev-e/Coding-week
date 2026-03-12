@@ -120,10 +120,6 @@ def train_model_svm():
 
 ###Random-forest-model:
 
-
-
-
-
 def train_model_Randomforest(data_path='data/risk_factors_cervical_cancer.csv', model_save_path='model_rf.pkl'):
     # 1. Chargement et nettoyage
     df = pd.read_csv(data_path)
