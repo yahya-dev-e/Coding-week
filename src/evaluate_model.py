@@ -8,7 +8,7 @@ from sklearn.metrics import (
     f1_score,
     roc_auc_score,
 )
-import train_model
+import src.train_model as train_model
 
 def evaluate_model(
     model_path: str,
