@@ -1,3 +1,4 @@
+
 import joblib
 import pandas as pd
 from sklearn.metrics import (
@@ -55,4 +56,3 @@ def evaluate_model(
         print(f"{name.capitalize():<12} {display}")
 
     return metrics
-
