@@ -1,0 +1,4 @@
+catboost_info/
+*.pyc
+.pytest_cache/
+__pycache__/
