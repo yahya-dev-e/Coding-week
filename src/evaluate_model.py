@@ -8,7 +8,7 @@ from sklearn.metrics import (
     f1_score,
     roc_auc_score,
 )
-import src.train_model as train_model
+import train_model as train_model
 
 def evaluate_model(
     model_path: str,
@@ -56,3 +56,56 @@ def evaluate_model(
         print(f"{name.capitalize():<12} {display}")
 
     return metrics
+
+from train_model import (
+    train_model_svm, 
+    train_model_XGBoost, 
+    train_model_catboost, 
+    train_model_Randomforest
+)
+
+def run_all_evaluations():
+    """
+    Lance l'entraînement et l'évaluation pour chaque modèle 
+    en utilisant la fonction evaluate_model fournie.
+    """
+    
+    # 1. Liste des modèles à tester
+    model_trainers = {
+        "SVM": train_model_svm,
+        "XGBoost": train_model_XGBoost,
+        "CatBoost": train_model_catboost,
+        "Random Forest": train_model_Randomforest
+    }
+
+    results = []
+
+    print("--- DÉBUT DE L'ÉVALUATION GÉNÉRALE ---")
+
+    for name, train_func in model_trainers.items():
+        try:
+            # L'entraînement retourne : model_path, X_test (DataFrame), y_test
+            path, X_test, y_test = train_func()
+            
+            # APPEL DE TA FONCTION evaluate_model
+            metrics = evaluate_model(path, X_test, y_test)
+            
+            # Stockage pour comparaison
+            metrics['Model'] = name
+            results.append(metrics)
+            
+        except Exception as e:
+            print(f"❌ Erreur lors de l'évaluation de {name}: {e}")
+
+    # 2. Affichage d'un tableau comparatif final
+    if results:
+        df_results = pd.DataFrame(results)
+        # On remet 'Model' en première colonne
+        cols = ['Model'] + [c for c in df_results.columns if c != 'Model']
+        print("\n" + "="*50)
+        print("📊 RÉSUMÉ DES PERFORMANCES")
+        print("="*50)
+        print(df_results[cols].to_string(index=False))
+
+if __name__ == "__main__":
+    run_all_evaluations()
