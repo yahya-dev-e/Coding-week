@@ -38,6 +38,67 @@ def test_preprocess_data():
     assert len(X_test) == len(y_test)
     assert len(X_test) >= 2  # Verification that we have a valid test sample
 
+
+def test_remove_outliers_iqr():
+    # Création d'un DataFrame avec des outliers évidents
+    df = pd.DataFrame({
+        "Age": [20, 25, 30, 35, 200],           # 200 = outlier clair
+        "Number of sexual partners": [1, 2, 2, 3, 50],  # 50 = outlier clair
+        "Biopsy": [0, 0, 1, 0, 1]
+    })
+    
+    df_clean = remove_outliers_iqr(df)
+    
+    # Les lignes avec outliers doivent avoir été supprimées
+    assert df_clean.shape[0] < df.shape[0]
+    # Vérifie que les valeurs extrêmes ne sont plus là
+    assert df_clean["Age"].max() < 200
+    assert df_clean["Number of sexual partners"].max() < 50
+
+    
+def test_supprimer_colonnes_zero():
+    df = pd.DataFrame({
+        "Age":     [20, 30, 40],
+        "col_zero": [0, 0, 0],      # doit être supprimée
+        "Biopsy":  [0, 1, 0]
+    })
+    
+    df_clean = supprimer_colonnes_zero(df)
+    
+    # La colonne nulle doit avoir disparu
+    assert "col_zero" not in df_clean.columns
+    # Les autres colonnes doivent être intactes
+    assert "Age" in df_clean.columns
+    assert "Biopsy" in df_clean.columns
+def test_drop_high_correlation():
+    df = pd.DataFrame({
+        "feature_A": [1, 2, 3, 4, 5],
+        "feature_B": [1, 2, 3, 4, 5],      # corrélation parfaite avec A → doit être supprimée
+        "feature_C": [5, 3, 1, 4, 2]        # pas corrélée → doit être conservée
+    })
+    
+    df_clean = drop_high_correlation(df, threshold=0.9)
+    
+    # feature_B doit avoir été supprimée (corrélation = 1.0 avec feature_A)
+    assert "feature_B" not in df_clean.columns
+    # feature_A et feature_C doivent être conservées
+    assert "feature_A" in df_clean.columns
+    assert "feature_C" in df_clean.columns
+
+
+def test_drop_high_correlation_no_drop():
+    # Cas où aucune corrélation ne dépasse le seuil → rien ne doit être supprimé
+    df = pd.DataFrame({
+        "feature_A": [1, 2, 3, 4, 5],
+        "feature_B": [5, 3, 1, 4, 2],      # pas corrélée
+        "feature_C": [2, 4, 1, 5, 3]        # pas corrélée
+    })
+    
+    df_clean = drop_high_correlation(df, threshold=0.9)
+    
+    # Toutes les colonnes doivent être conservées
+    assert df_clean.shape[1] == df.shape[1]
+
 def test_training_and_prediction_RandomForest():
     # Use the alias 'train_model' to call the function inside the module
     # Ensure train_model.py actually has a function named train_model_Randomforest
