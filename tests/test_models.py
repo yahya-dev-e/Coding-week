@@ -2,9 +2,9 @@ import os
 import pandas as pd
 import numpy as np
 import joblib
-from data_processing import load_and_clean_data, preprocess_data, optimize_memory
-import train_model as train_model
-import evaluate_model as evaluate_model
+from src.data_processing import load_and_clean_data, preprocess_data, optimize_memory,remove_outliers_iqr ,supprimer_colonnes_zero, drop_high_correlation
+import src.train_model as train_model
+import src.evaluate_model as evaluate_model
 
 def test_dataset_loading():
     # Ensure this path is relative to the root 'Coding-week'
@@ -55,7 +55,7 @@ def test_remove_outliers_iqr():
     assert df_clean["Age"].max() < 200
     assert df_clean["Number of sexual partners"].max() < 50
 
-    
+
 def test_supprimer_colonnes_zero():
     df = pd.DataFrame({
         "Age":     [20, 30, 40],
