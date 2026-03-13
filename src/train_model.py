@@ -16,13 +16,27 @@ def train_model_catboost():
         loss_function="Logloss", verbose=100, random_seed=42
     )
     model.fit(X_train, y_train)
-    
+
+    # Calcul des métriques sur le test set
+    from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
+    y_pred = model.predict(X_test)
+    y_prob = model.predict_proba(X_test)[:, 1]
+
     # Création du dossier s'il n'existe pas
     os.makedirs('models', exist_ok=True)
     # Sauvegarde dans le dossier models/
     model_path = 'models/catboost_model.joblib'
     joblib.dump(model, model_path)
-    joblib.dump({'imputer': imputer, 'scaler': scaler, 'columns': list(cols)}, 'models/catboost_assets.joblib')
+    joblib.dump({
+        'imputer':   imputer,
+        'scaler':    scaler,
+        'columns':   list(cols),
+        'accuracy':  accuracy_score(y_test, y_pred),
+        'precision': precision_score(y_test, y_pred),
+        'recall':    recall_score(y_test, y_pred),
+        'f1':        f1_score(y_test, y_pred),
+        'roc_auc':   roc_auc_score(y_test, y_prob),
+    }, 'models/catboost_assets.joblib')
     
     print(f"✅ Modèle CatBoost sauvegardé dans '{model_path}'.")
     return model_path, pd.DataFrame(X_test, columns=cols), y_test
@@ -80,4 +94,4 @@ def train_model_Randomforest():
 
 if __name__ == "__main__":
     # Exemple d'entraînement du modèle Random Forest
-    train_model_Randomforest()
+    train_model_catboost()
