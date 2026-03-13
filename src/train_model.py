@@ -19,7 +19,6 @@ def train_model_catboost():
     
     # Création du dossier s'il n'existe pas
     os.makedirs('models', exist_ok=True)
-    
     # Sauvegarde dans le dossier models/
     model_path = 'models/catboost_model.joblib'
     joblib.dump(model, model_path)
