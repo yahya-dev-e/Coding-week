@@ -2,8 +2,7 @@ import os
 import pandas as pd
 import numpy as np
 import joblib
-# Added 'optimize_memory' to the import list
-import src.data_processing as data_process
+from src.data_processing import load_and_clean_data, preprocess_data, optimize_memory
 import src.train_model as train_model
 import src.evaluate_model as evaluate_model
 
