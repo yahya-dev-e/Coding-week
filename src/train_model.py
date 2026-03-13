@@ -5,7 +5,7 @@ from xgboost import XGBClassifier
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 from catboost import CatBoostClassifier
-from data_processing import load_and_clean_data, preprocess_data
+from src.data_processing import load_and_clean_data, preprocess_data
 
 def train_model_catboost():
     df = load_and_clean_data('data/risk_factors_cervical_cancer.csv')
