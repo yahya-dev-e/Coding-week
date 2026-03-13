@@ -3,13 +3,13 @@ import pandas as pd
 import numpy as np
 import joblib
 # Added 'optimize_memory' to the import list
-from src.data_processing import load_and_clean_data, preprocess_data, optimize_memory
+import src.data_processing as data_process
 import src.train_model as train_model
 import src.evaluate_model as evaluate_model
 
 def test_dataset_loading():
     # Ensure this path is relative to the root 'Coding-week'
-    df = load_and_clean_data("data/risk_factors_cervical_cancer.csv")
+    df = data_process.load_and_clean_data("data/risk_factors_cervical_cancer.csv")
     assert df.shape[0] > 0
     # Clean check: ensure no '?' strings remain
     assert '?' not in df.values 
@@ -20,7 +20,7 @@ def test_optimize_memory():
         "b": np.array([1.0, 2.0, 3.0], dtype='float64')
     })
     before = df.memory_usage().sum()
-    df_opt = optimize_memory(df)
+    df_opt = data_process.optimize_memory(df)
     after = df_opt.memory_usage().sum()
     assert after <= before # Changed to <= in case the sample is too small to shrink
 
@@ -33,7 +33,7 @@ def test_preprocess_data():
     })
     
     # Now a 25% test_size will result in 2 rows, enough to hold one '0' and one '1'
-    X_train, X_test, y_train, y_test, imputer, scaler, cols = preprocess_data(df)
+    X_train, X_test, y_train, y_test, imputer, scaler, cols = data_process.preprocess_data(df)
     
     assert len(X_train) == len(y_train)
     assert len(X_test) == len(y_test)
