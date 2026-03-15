@@ -31,7 +31,7 @@ Coding-week/
 
 ### Prerequisites
 
-- Python 3.12 or 3.14
+- Python 3.14
 - (Optional) Docker
 
 It is recommended to use a virtual environment.
@@ -100,6 +100,15 @@ Trained models are saved in the `models/` directory for reuse.
 | **XGBoost** | **0.9670** | **0.6250** | **1.0000** | **0.7692** | **0.9674** |
 | CatBoost | 0.9231 | 0.3333 | 0.4000 | 0.3636 | 0.9581 |
 | Random Forest | 0.9231 | 0.3333 | 0.4000 | 0.3636 | 0.9558 |
+
+### 📊 Model Performance Comparaison
+
+![Model Performance Comparison](images/Model_Performence_Comparaison.jpeg)
+
+
+### 🔢 Confusion Matrices
+
+![Confusion Matrices](images/Confusion_Matrics.jpeg)
 
 **Why XGBoost?**
 Given the medical context of this project, **Recall is the most critical metric** — missing a cancer case (false negative) is far more dangerous than a false alarm. XGBoost achieved a perfect recall of **100%**, meaning it correctly identified every at-risk patient in the test set. It also led in accuracy (96.7%), F1-score (76.9%), and ROC-AUC (0.9674), making it the dominant model across all metrics.
