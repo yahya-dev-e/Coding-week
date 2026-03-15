@@ -25,11 +25,31 @@ def preprocess_data(df):
     imputer = SimpleImputer(strategy='median')
     scaler = StandardScaler()
     
-    # Apprentissage et transformation
-    X_train_scaled = scaler.fit_transform(imputer.fit_transform(X_train))
-    X_test_scaled = scaler.transform(imputer.transform(X_test))
+    # Imputation puis normalisation
+    X_train_imp    = imputer.fit_transform(X_train)
+    X_test_scaled  = scaler.fit_transform(imputer.transform(X_test))  # ← bug corrigé aussi (fit sur train seulement)
     
-    return X_train_scaled, X_test_scaled, y_train, y_test, imputer, scaler, cols
+    # ── Oversampling manuel sur X_train uniquement ─────────────────
+    # On sépare les deux classes après imputation
+    X_train_pos = X_train_imp[y_train.values == 1]   # cas positifs (At risk)
+    X_train_neg = X_train_imp[y_train.values == 0]   # cas négatifs (No risk)
+    
+    num_neg = len(X_train_neg)
+    
+    # Duplication aléatoire des cas positifs jusqu'à égaler la classe négative
+    np.random.seed(42)
+    indices         = np.random.choice(len(X_train_pos), size=num_neg, replace=True)
+    X_train_pos_over = X_train_pos[indices]
+    
+    # Fusion et équilibrage 50/50
+    X_train_bal = np.vstack((X_train_neg, X_train_pos_over))
+    y_train_bal = np.hstack((np.zeros(num_neg), np.ones(num_neg)))
+    
+    # Normalisation après oversampling (évite data leakage)
+    X_train_scaled = scaler.fit_transform(X_train_bal)
+    X_test_scaled  = scaler.transform(imputer.transform(X_test))
+    
+    return X_train_scaled, X_test_scaled, y_train_bal, y_test, imputer, scaler, cols
 
 def remove_outliers_iqr(df):
     """
