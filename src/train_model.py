@@ -5,7 +5,7 @@ from xgboost import XGBClassifier
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 from catboost import CatBoostClassifier
-from data_processing import load_and_clean_data, preprocess_data
+from src.data_processing import load_and_clean_data, preprocess_data
 
 def train_model_catboost():
     df = load_and_clean_data('data/risk_factors_cervical_cancer.csv')
@@ -92,6 +92,3 @@ def train_model_Randomforest():
     print(f"✅ Modèle Random Forest sauvegardé dans '{model_path}'.")
     return model_path, pd.DataFrame(X_test, columns=cols), y_test
 
-if __name__ == "__main__":
-    # Exemple d'entraînement du modèle Random Forest
-    train_model_catboost()

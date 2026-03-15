@@ -1,4 +1,3 @@
-
 import joblib
 import pandas as pd
 from sklearn.metrics import (
@@ -8,7 +7,7 @@ from sklearn.metrics import (
     f1_score,
     roc_auc_score,
 )
-import train_model as train_model
+import src.train_model as train_model
 
 def evaluate_model(
     model_path: str,
@@ -57,7 +56,7 @@ def evaluate_model(
 
     return metrics
 
-from train_model import (
+from src.train_model import (
     train_model_svm, 
     train_model_XGBoost, 
     train_model_catboost, 
