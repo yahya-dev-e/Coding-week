@@ -32,7 +32,7 @@ To verify the machine learning pipeline, run the evaluation script. This script 
 
 ```bash
 # Run from the root directory
-python src/evaluate_model.py
+python -m src.evaluate_model
 
 ```
 
