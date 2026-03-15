@@ -129,10 +129,10 @@ The SHAP analysis on our final model identified the following **Top Contributing
 
 | Rank | Feature | Importance Score | Relative Weight |
 | :--- | :--- | :--- | :--- |
-| 1 | **Schiller** | 0.46 | 100% |
-| 2 | Hinselmann | 0.12 | 26% |
+| 1 | **Schiller** | 0.48 | 100% |
+| 2 | Hinselmann | 0.10 | 24% |
 | 3 | Citology | 0.11 | 24% |
-| 4 | IUD (years) | 0.10 | 23% |
+| 4 | IUD (years) | 0.10 | 21% |
 | 5 | Age | 0.05 | 11% |
 | 6 | Num of pregnancies | 0.04 | 9% |
 | 7 | First sexual intercourse | 0.04 | 9% |
