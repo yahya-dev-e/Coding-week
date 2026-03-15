@@ -92,6 +92,3 @@ def train_model_Randomforest():
     print(f"✅ Modèle Random Forest sauvegardé dans '{model_path}'.")
     return model_path, pd.DataFrame(X_test, columns=cols), y_test
 
-if __name__ == "__main__":
-    # Exemple d'entraînement du modèle Random Forest
-    train_model_catboost()

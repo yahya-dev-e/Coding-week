@@ -31,7 +31,7 @@ Coding-week/
 
 ### Prerequisites
 
-- Python 3.12 or 3.14
+- Python 3.14
 - (Optional) Docker
 
 It is recommended to use a virtual environment.
@@ -92,19 +92,17 @@ Trained models are saved in the `models/` directory for reuse.
 
 ❓ Q2 — Which ML model performed best? Provide performance metrics.
 
-**CatBoost was the best overall model**, achieving the highest balance between precision and recall, making it the most clinically reliable choice.
+**XGBoost was the best overall model**, achieving the highest balance between precision and recall, making it the most clinically reliable choice.
 
 | Model | Accuracy | Precision | Recall | F1 | ROC-AUC |
 |---|---|---|---|---|---|
-| SVM | 0.9477 | 0.6250 | 0.4545 | 0.5263 | 0.9164 |
-| XGBoost | 0.9593 | 0.7500 | 0.5455 | 0.6316 | 0.9667 |
-| **CatBoost** | **0.9709** | **0.8000** | **0.7273** | **0.7619** | 0.9266 |
-| Random Forest | 0.9477 | 0.6667 | 0.3636 | 0.4706 | **0.9709** |
+| SVM | 0.9341 | 0.4000 | 0.4000 | 0.4000 | 0.9488 |
+| **XGBoost** | **0.9670** | **0.6250** | **1.0000** | **0.7692** | **0.9674** |
+| CatBoost | 0.9231 | 0.3333 | 0.4000 | 0.3636 | 0.9581 |
+| Random Forest | 0.9231 | 0.3333 | 0.4000 | 0.3636 | 0.9558 |
 
-**Why CatBoost?**
-Given the medical context of this project, **Recall is the most critical metric** — missing a cancer case (false negative) is far more dangerous than a false alarm. CatBoost achieved the highest recall at **72.7%**, meaning it correctly identified nearly 3 out of 4 at-risk patients. It also led in accuracy (97.1%), precision (80%), and F1-score (76.2%), making it the dominant model across nearly all metrics.
-
-> ⚠️ Random Forest achieved the highest ROC-AUC (0.9709), suggesting strong discriminative power, but its recall of only 36.4% makes it clinically unsafe as a primary classifier — it would miss most cancer cases.
+**Why XGBoost?**
+Given the medical context of this project, **Recall is the most critical metric** — missing a cancer case (false negative) is far more dangerous than a false alarm. XGBoost achieved a perfect recall of **100%**, meaning it correctly identified every at-risk patient in the test set. It also led in accuracy (96.7%), F1-score (76.9%), and ROC-AUC (0.9674), making it the dominant model across all metrics.
 
 ---
 ## 🎨SHAP
