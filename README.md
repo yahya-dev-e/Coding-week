@@ -65,16 +65,19 @@ pytest tests/
 
 ```text
 Coding-week/
+├── .github/workflows/    # CI pipeline
 ├── app/                  # Web application (app.py)
 ├── data/                 # Dataset (the original and the cleaned one)
 ├── models/               # Serialized trained models & assets (.joblib)
 ├── notebook/             
-│   └── eda.ipynb         # Jupyter notebooks answering data processing questions
+│   └── images/            # Images for visualization
+│   ├── eda.ipynb          # Jupyter notebooks answering data processing questions
 ├── src/
 │   ├── data_processing.py # Data cleaning and preparation
 │   ├── train_model.py     # Model training functions
 │   └── evaluate_model.py  # Model evaluation and execution pipeline
 ├── tests/                 # Unit tests for model reliability
+├── .gitignore             # Files and folders excluded from Git
 ├── Dockerfile             # Docker configuration for containerization
 ├── conftest.py            # Pytest configuration
 ├── requirements.txt       # Python dependencies
