@@ -144,7 +144,7 @@ The SHAP analysis on our final model identified the following **Top Contributing
 | 10 | Hormonal Contraceptives | 0.01 | 2% |
 
 ## 🎨  Shap Result 
-![Shap Result](notebook/images/shap_result.jpeg)
+![Shap Result](notebook/images/Shap_results.jpeg)
 
 ### 💡 Key Insights from SHAP Analysis
 
