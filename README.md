@@ -31,7 +31,7 @@ Coding-week/
 
 ### Prerequisites
 
-- Python 3.12 or 3.14
+- Python 3.14
 - (Optional) Docker
 
 It is recommended to use a virtual environment.
