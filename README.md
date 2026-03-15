@@ -131,7 +131,7 @@ The SHAP analysis on our final model identified the following **Top Contributing
 | :--- | :--- | :--- | :--- |
 | 1 | **Schiller** | 0.48 | 100% |
 | 2 | Citology | 0.11 | 24% |
-| 4 | IUD (years) | 0.10 | 21% |
+| 3 | IUD (years) | 0.10 | 21% |
 | 4 | Hinselmann | 0.10 | 24% |
 | 5 | Age | 0.05 | 11% |
 | 6 | First sexual intercourse | 0.04 | 9% |
