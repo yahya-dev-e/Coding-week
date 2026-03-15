@@ -103,12 +103,11 @@ Trained models are saved in the `models/` directory for reuse.
 
 ### 📊 Model Performance Comparaison
 
-![Model Performance Comparison](images/Model_Performence_Comparaison.jpeg)
-
+![images](../notebook/images/Model_Performence_Comparaison.jpeg)
 
 ### 🔢 Confusion Matrices
 
-![Confusion Matrices](images/Confusion_Matrics.jpeg)
+![images](../notebook/images/Confusion_Matrics.jpeg)
 
 **Why XGBoost?**
 Given the medical context of this project, **Recall is the most critical metric** — missing a cancer case (false negative) is far more dangerous than a false alarm. XGBoost achieved a perfect recall of **100%**, meaning it correctly identified every at-risk patient in the test set. It also led in accuracy (96.7%), F1-score (76.9%), and ROC-AUC (0.9674), making it the dominant model across all metrics.
